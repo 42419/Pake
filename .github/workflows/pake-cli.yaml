@@ -85,11 +85,14 @@ jobs:
 
       - name: Install Windows Build Dependencies
         if: inputs.platform == 'windows-latest'
+        shell: pwsh  # 明确使用 PowerShell Core 执行
         run: |
           choco install visualstudio2022buildtools -y --no-progress
-          powershell -Command "Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile \"$env:TEMP\MicrosoftEdgeWebView2RuntimeInstaller.exe\""
-          powershell -Command "Start-Process -FilePath \"$env:TEMP\MicrosoftEdgeWebView2RuntimeInstaller.exe\" -ArgumentList '/silent', '/install' -Wait"
-
+          $webview2DownloadUrl = "https://go.microsoft.com/fwlink/p/?LinkId=2124703"  # 官方引导程序链接
+          $installerTempPath = Join-Path -Path $env:TEMP -ChildPath "MicrosoftEdgeWebView2RuntimeInstaller.exe"  # 安全拼接临时路径
+          Invoke-WebRequest -Uri $webview2DownloadUrl -OutFile $installerTempPath -ErrorAction Stop  # 下载失败时终止流程
+          Start-Process -FilePath $installerTempPath -ArgumentList "/silent", "/install" -Wait -NoNewWindow -ErrorAction Stop
+      
       - name: Install Rust for macos-latest
         if: inputs.platform == 'macos-latest'
         uses: dtolnay/rust-toolchain@stable
