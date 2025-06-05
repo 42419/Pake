@@ -83,6 +83,12 @@ jobs:
           toolchain: stable-x86_64-msvc
           target: x86_64-pc-windows-msvc
 
+      - name: Install Windows Build Dependencies
+        if: inputs.platform == 'windows-latest'
+        run: |
+          choco install visualstudio2022buildtools -y --no-progress
+          choco install microsoft-edge-webview2 -y --no-progress
+
       - name: Install Rust for macos-latest
         if: inputs.platform == 'macos-latest'
         uses: dtolnay/rust-toolchain@stable
@@ -141,7 +147,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: output-${{ inputs.platform }}.zip
-          path: node_modules/pake-cli/output/*
+          path: output/*
           retention-days: 3
 
       - name: Rust cache store
