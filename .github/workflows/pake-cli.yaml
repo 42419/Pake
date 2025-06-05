@@ -87,7 +87,9 @@ jobs:
         if: inputs.platform == 'windows-latest'
         run: |
           choco install visualstudio2022buildtools -y --no-progress
-          choco install microsoft-edge-webview2 -y --no-progress
+              powershell -Command "Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile
+              '$env:TEMP\MicrosoftEdgeWebView2RuntimeInstaller.exe'; Start-Process -FilePath
+              '$env:TEMP\MicrosoftEdgeWebView2RuntimeInstaller.exe' -ArgumentList '/silent /install' -Wait"
 
       - name: Install Rust for macos-latest
         if: inputs.platform == 'macos-latest'
